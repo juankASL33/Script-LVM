@@ -49,6 +49,18 @@ echo "El script se está ejecutando como root"
 #   Comprobar si hay tamaño suficiente, 
 #   si no lo hay salir del programa sin hacer nada.
 #   si lo hay, crear LV de 20GB sobre "vg01-script" llamado "lv20gb"
+VG_NAME=myvg
+LV_SIZE=20G
+VG_FREE=$(sudo vgdisplay -c $VG_NAME | cut -d ":" -f 16)
+
+if [ $LV_SIZE -lt $VG_FREE ]; then
+   lvcreate -L $LV_SIZE -n mylv $VG_NAME
+	Return 0
+else
+   echo "No hay suficiente espacio libre en el grupo de volumenes. Saliendo del script."
+   return 1
+	exit 1
+fi
 
 #7. asignar sistema de ficheros al LV
 #   ext4
